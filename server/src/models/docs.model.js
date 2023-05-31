@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require("mongoose");
 
 const DocsSchema = new Schema({
-	fio: {
+	studentId: {
 		type: Types.ObjectId,
 		ref: "Students",
 	},
@@ -13,10 +13,8 @@ const DocsSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	docLink: {
-		type: String,
-		required: true,
-		default: "Ссылка",
+	docScan: {
+		type: JSON,
 	},
 });
 

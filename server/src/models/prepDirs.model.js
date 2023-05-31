@@ -1,7 +1,11 @@
 const { Schema, model, Types } = require("mongoose");
 
 const PrepDirsSchema = new Schema({
-	dirNum: {
+	title: {
+		type: String,
+		requred: true,
+	},
+	dirCode: {
 		type: String,
 		requred: true,
 	},

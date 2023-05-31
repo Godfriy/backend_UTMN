@@ -1,19 +1,16 @@
 const { Schema, model, Types } = require("mongoose");
 
 const EntryDocsSchema = new Schema({	
-	fio: {
+	studentId: {
 		type: Types.ObjectId,
 		ref: "Students",
 	},
 	form: {
-		type: String,
-		required: true,
-		default: "Ссылка",
+		type: JSON,
 	},
 	testRes: {
-		type: String,
+		type: Number,
 		requred: true,
-		default: "Ссылка",
 	},
 });
 

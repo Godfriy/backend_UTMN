@@ -7,10 +7,10 @@ const GroupsSchema = new Schema({
 	},
 	prepDir: {
 		type: Types.ObjectId,
-		ref: "prepDir",
+		ref: "PrepDirs",
 	},
 	entryYear: {
-		type: String,
+		type: Number,
 	},
 });
 

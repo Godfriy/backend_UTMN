@@ -17,8 +17,7 @@ const StudentsSchema = new Schema({
 		default: undefined,
 	},
 	photo: {
-		type: String,
-		default: "Ссылка",
+		type: JSON,
 	},
 	email: {
 		type: String,

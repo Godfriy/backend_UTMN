@@ -1,11 +1,12 @@
 const { Schema, model, Types } = require("mongoose");
 
 const StudentJobsSchema = new Schema({
-	fio: {
-		type: String,
+	studentId: {
+		type: Types.ObjectId,
+		ref: 'Students',
 		required: true,
 	},
-	begDate: {
+	startDate: {
 		type: Date,
 		required: true,
 	},
@@ -15,8 +16,10 @@ const StudentJobsSchema = new Schema({
 	post: {
 		type: String,
 	},
-	jobPlace: {
-		type: String,
+	companyId: {
+		type: Types.ObjectId,
+		ref: 'Companies',
+		required: true,
 	},
 });
 

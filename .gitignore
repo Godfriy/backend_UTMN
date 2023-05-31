@@ -127,3 +127,6 @@ dist
 .pnp.*
 .adminbro/.entry.js
 .eslintrc.json
+yarn.lock
+server/package-lock.json
+yarn.lock

@@ -1,12 +1,12 @@
 const { Schema, model, Types } = require("mongoose");
 
 const StudentGroupsSchema = new Schema({
-	fio: {
+	studentId: {
 		type: Types.ObjectId,
 		ref: "Students",
 		required: true,
 	},
-	groupName: {
+	groupId: {
 		type: Types.ObjectId,
 		ref: "Groups",
 		required: true,

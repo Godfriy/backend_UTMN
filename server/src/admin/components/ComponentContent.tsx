@@ -7,11 +7,11 @@ const ComponentContent: React.FC<BasePropertyProps> = (props) => {
     const {property, onChange, record} = props
 
     const handleDropZoneChange = (files) => {
-        onChange(property.name, files[0])
+        onChange?.(property.name, files[0])
     }
 
-    const uploadedPhoto = record.params.material
-    const photoToUpload = record.params[property.name]
+    const uploadedPhoto = record?.params.material
+    const photoToUpload = record?.params[property.name]
 
     return (
         <Box py = "xl">

@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
-const {config} = require('dotenv')
-config()
+const dotenv = require('dotenv')
+const path = require('path')
+dotenv.config({ path: path.resolve(__dirname, './.env') });
 
-const localMongoose = process.env.DB_URL
+const localMongoose = process.env.DATABASE_URL
 
 const connectDB = async () => {
 	try {
+		mongoose.set('strictQuery', true)
 		await mongoose.connect(localMongoose, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,

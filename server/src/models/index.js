@@ -15,5 +15,5 @@ module.exports = {
     StudentGroups,
     PrepDirs,
     StudentJobs,
-    Companies,
+    Companies
 };

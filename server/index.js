@@ -26,7 +26,7 @@ app.use(admin.adminBro.options.rootPath, admin.routerAdmin)
 app.use(fileUpload())
 app.use(express.static(path.resolve(__dirname, 'static')))
 app.use('/api', router)
-app.use("/auth", authRouter)
+app.use('/auth', authRouter)
 app.use(errorHandler)
 
 // app.get('/', (req, res, next) => {

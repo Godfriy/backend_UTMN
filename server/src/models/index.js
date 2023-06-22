@@ -6,6 +6,8 @@ const StudentGroups = require("./groups.students.model");
 const PrepDirs = require("./prepDirs.model");
 const StudentJobs = require("./jobs.students.model");
 const Companies = require("./companies.model");
+const User = require("./User");
+const Role = require("./Role");
 
 module.exports = {
     Students,
@@ -15,5 +17,7 @@ module.exports = {
     StudentGroups,
     PrepDirs,
     StudentJobs,
-    Companies
+    Companies,
+    Role,
+    User
 };

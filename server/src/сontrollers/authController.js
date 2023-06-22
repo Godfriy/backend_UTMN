@@ -1,5 +1,5 @@
-const User = require('./src/models/User');
-const Role = require('./src/models/Role');
+const User = require('../models/User');
+const Role = require('../models/Role');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator')
@@ -8,7 +8,7 @@ const generateAccessToken = (id, roles) => {
     const payload = {
         id,
         roles
-    }
+    } 
     return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: "24h"} )
 }
 

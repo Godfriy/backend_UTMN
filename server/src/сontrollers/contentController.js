@@ -1,16 +1,13 @@
 const ApiError = require("../error/ApiError.js");
 const {
-    ShopCategoria,
-    MapPositions,
-    Shop,
-    ShopCenterMap,
-    PromoAndEvents,
-    Vakansii,
-    Bussines,
-    Arenda,
-    Contacts,
-    Zayavki,
-    ZayavkiVakansii
+    Students,
+    Docs,
+    EntryDocs,
+    Groups,
+    StudentGroups,
+    PrepDirs,
+    StudentJobs,
+    Companies,
 } = require("../models/index.js");
 
 require("dotenv").config();

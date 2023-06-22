@@ -17,6 +17,8 @@ const {
     PrepDirs,
     StudentJobs,
     Companies,
+    User,
+    Role
 } = modelsMongoose;
 
 AdminBro.registerAdapter(AdminBroMongoose);
@@ -29,7 +31,8 @@ const menu = {
     students:    { name: "Студенты",        icon: "Education" },
     group:       { name: "Группы",          icon: "Group" },
     docs:        { name: "Документы",       icon: "Document" },
-    work:        { name: "Работа",          icon: "Enterprise" }
+    work:        { name: "Работа",          icon: "Enterprise" },
+    auth:        { name: "Пользователи",    icon: "Users" }
 }
 
 const adminBro = new AdminBro({
@@ -158,7 +161,27 @@ const adminBro = new AdminBro({
                     compName: {isTitle: true}
                 }
             }
-        },        
+        },
+        {
+            resource: User,
+            options: {
+                parent: menu.auth,
+                properties: {
+                    _id: {isVisible: false},
+                    compName: {isTitle: true}
+                }
+            }
+        },
+        {
+            resource: Role,
+            options: {
+                parent: menu.auth,
+                properties: {
+                    _id: {isVisible: false},
+                    compName: {isTitle: true}
+                }
+            }
+        }       
     ],
     locale: {
         translations: {
@@ -171,6 +194,8 @@ const adminBro = new AdminBro({
                 PrepDirs: "Направления подготовки",
                 StudentJobs: "Студенты и работа",
                 Companies: "Компании-партнёры",
+                User: "Пользователи",
+                Role: "Роли"
             },
             resources: {
                 Students: {
@@ -237,7 +262,19 @@ const adminBro = new AdminBro({
                         post: 'Должность',
                         companyId: 'Компания',
                     }
-                }
+                },
+                User: {
+                    properties: {
+                        username: 'Имя пользователя',
+                        password: 'Пароль',
+                        roles: 'Роли',
+                    }
+                },
+                Roles: {
+                    properties: {
+                        value: 'Значение',
+                    }
+                },
             },
         },
     },

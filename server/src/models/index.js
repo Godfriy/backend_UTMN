@@ -7,7 +7,7 @@ const PrepDirs = require("./prepDirs.model");
 const StudentJobs = require("./jobs.students.model");
 const Companies = require("./companies.model");
 const User = require("./User");
-const Role = require("./Role");
+const Role = require("./Methodist");
 
 module.exports = {
     Students,

@@ -168,7 +168,6 @@ const adminBro = new AdminBro({
                 parent: menu.auth,
                 properties: {
                     _id: {isVisible: false},
-                    compName: {isTitle: true}
                 }
             }
         },
@@ -178,7 +177,6 @@ const adminBro = new AdminBro({
                 parent: menu.auth,
                 properties: {
                     _id: {isVisible: false},
-                    compName: {isTitle: true}
                 }
             }
         }       
@@ -265,9 +263,9 @@ const adminBro = new AdminBro({
                 },
                 User: {
                     properties: {
-                        username: 'Имя пользователя',
+                        login: 'Имя пользователя',
                         password: 'Пароль',
-                        roles: 'Роли',
+                        isMethodist: 'Является методистом',
                     }
                 },
                 Roles: {

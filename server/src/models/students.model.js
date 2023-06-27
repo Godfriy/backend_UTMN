@@ -25,6 +25,11 @@ const StudentsSchema = new Schema({
 	status: {
 		type: String,
 		required: true,
+	},
+	userId: {
+		type: Types.ObjectId,
+		ref: "User",
+		required: true,
 	}
 });
 	

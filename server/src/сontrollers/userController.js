@@ -1,10 +1,10 @@
-const jwt = require("jsonwebtoken");
-const { config } = require("dotenv");
-const { compare } = require("bcrypt");
-
-config();
-
+const User = require('../models/User');
+const Role = require('../models/Methodist');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator')
 const ApiError = require("../error/ApiError.js");
+
 const {
     Students,
     Docs,
@@ -14,170 +14,155 @@ const {
     PrepDirs,
     StudentJobs,
     Companies,
-} = require("../models/index");
+} = require("../models/index.js");
 
-const generateJwt = (id, login, isMethodist) => {
-    return jwt.sign({ id, login, isMethodist }, process.env.SECRET_KEY, {
-        expiresIn: "1d",
-    });
-};
+const generateAccessToken = (id, roles) => {
+    const payload = {
+        id,
+        roles
+    } 
+    return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: "24h"} )
+}
 
-const getDecodedToken = (token) => {
-    return jwt.decode(token);
-};
-
-class UserController {
-    async logIn(req, res, next) {
-        const { login, password } = req.body;
-
+class userController {
+    async login(req, res) {
         try {
-            Users.findOne(
-                {
-                    login: login,
-                },
-                async function (err, user) {
-                    if (err) throw err;
-                    if (!user) {
-                        return res.status(401).json({
-                            message: "Пользователь не найден",
-                        });
-                    }
-
-                    const validPassword = await compare(
-                        password,
-                        user.password
-                    );
-                    if (validPassword) {
-                        let tutor = await Methodist.findOne({
-                            user: user._id,
-                        });
-
-                        return res.json({
-                            token: generateJwt(
-                                user._id,
-                                user.login,
-                                isMethodist ? Methodist._id : false
-                            ),
-                        });
-                    } else {
-                        res.status(400).json({
-                            error: "Неправильный логин или пароль",
-                        });
-                    }
-                }
-            );
+            const {login, password} = req.body
+            const user = await User.findOne({login})
+            if (!user) {
+                return res.status(400).json({message: `Пользователь ${login} не найден`})
+            }
+            const validPassword = bcrypt.compareSync(password, user.password)
+            if (!validPassword) {
+                return res.status(400).json({message: `Введен неверный пароль`})
+            }
+            const token = generateAccessToken(user._id, user.isMethodist)
+            return res.json({token})
         } catch (e) {
-            console.log(e);
-            return next(ApiError.internal("Что-то пошло не так", e));
+            console.log(e)
+            res.status(400).json({message: 'Login error'})
         }
     }
 
-    async check(req, res, next) {
-        const { token } = req.body;
-
+    async getUsers(req, res) {
         try {
-            const { id, login } = getDecodedToken(token);
-
-            User.findOne(
-                {
-                    _id: id,
-                    login: login,
-                },
-                function (err, user) {
-                    if (err) throw err;
-                    if (!user) {
-                        return res.status(200).json({
-                            auth: false,
-                        });
-                    } else {
-                        return res.status(200).json({
-                            auth: true,
-                            id: id,
-                        });
-                    }
-                }
-            );
+            const users = await User.find()
+            res.json(users)
         } catch (e) {
-            return res.status(200).json({
-                auth: false,
-            });
+            console.log(e)
         }
     }
 
-    async getUserInfo(req, res, next) {
-        const { token } = req.body;
-        const { id, tutor } = getDecodedToken(token);
-
+    async getStudents(req, res, next) {
         try {
-            Users.findOne({ _id: id }, async function (err, user) {
-                if (err) throw err;
-                if (!user) {
-                    return res.status(401).json({
-                        message: "Пользователь не найден!",
-                    });
+            await Students.find({}).then( 
+                async(students) => {
+                    res.json(students);
+                })
+        }
+        catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getDocs(req, res, next) {
+        try {
+            await Docs.find({}).then( 
+                async(docs) => {
+                    res.json(docs);
                 }
+            )
 
-                let studyGroup = await StudyGroup.findById(user.studyGroup);
-
-                let userCompitions = [];
-                const compitions = await Compitions.find();
-                for (const compition of compitions) {
-                    const compUser = await CompitionsPoints.find({
-                        user: id,
-                        compition: compition._id,
-                    });
-
-                    let points = 0;
-                    compUser.map((comp) => {
-                        points += comp.point;
-                    });
-                    userCompitions.push({
-                        compitionName: compition.title,
-                        compitionId: compition._id,
-                        points: points,
-                        group: "Развито",
-                    });
-                }
-
-                let userPASgroups = [];
-                let tutorInfo = {};
-
-                if (user.tutor) {
-                    tutorInfo = await Tutors.findOne({
-                        user: id,
-                    });
-                } else {
-                    const groupInfo = await PASGroupMembers.find({
-                        user: id,
-                    });
-                    for (const group of groupInfo) {
-                        const userPASgroup = await PASGroup.findById(
-                            group.PASgroup
-                        );
-                        userPASgroups.push(userPASgroup.name);
-                    }
-                }
-
-                const result = {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    studyGroupId: user.studyGroup,
-                    studyGroupName: studyGroup ? studyGroup.name : null,
-                    studyGroupFullName: studyGroup ? studyGroup.fullName : null,
-                    PASGroup: isMethodist ? null : userPASgroups,
-                    tutor: isMethodist ? true : false,
-                    tutorId: isMethodist ? tutor : null,
-                    pac: isMethodist ? tutorInfo.pac : null,
-                    compitions: userCompitions,
-                };
-
-                return res.json(result);
-            });
         } catch (e) {
             console.log(e);
-            return next(ApiError.internal("Ошибка!", e));
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getEntryDocs(req, res, next) {
+        try {
+            await EntryDocs.find({}).then( 
+                async(entryDocs) => {
+                    res.json(entryDocs);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getGroups(req, res, next) {
+        try {
+            await Groups.find({}).then( 
+                async(groups) => {
+                    res.json(groups);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getStudentGroups(req, res, next) {
+        try {
+            await StudentGroups.find({}).then( 
+                async(studentGroups) => {
+                    res.json(studentGroups);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getPrepDirs(req, res, next) {
+        try {
+            await PrepDirs.find({}).then( 
+                async(prepDirs) => {
+                    res.json(prepDirs);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getStudentJobs(req, res, next) {
+        try {
+            await StudentJobs.find({}).then( 
+                async(studentJobs) => {
+                    res.json(studentJobs);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
+        }
+    }
+
+    async getCompanies(req, res, next) {
+        try {
+            await Companies.find({}).then( 
+                async(companies) => {
+                    res.json(companies);
+                }
+            )
+
+        } catch (e) {
+            console.log(e);
+            return next(ApiError.forbidden("Что-то пошло не так", e));
         }
     }
 }
 
-module.exports = new UserController();
+module.exports = new userController()
